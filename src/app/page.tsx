@@ -705,37 +705,11 @@ export default function Home() {
         </section>
 
         {/* SECCIÓN 4: BANNER PROMOCIONAL DESTACADO (Wide Banner - Carrusel Dinámico) */}
+        {promoBanners.length > 0 && (
         <section className="py-6 bg-white overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="relative rounded-3xl overflow-hidden h-[340px] sm:h-80 shadow-lg group">
-              {promoBanners.length === 0 ? (
-                /* Fallback Static Delivery Banner */
-                <div className="h-full w-full relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-brand-blue via-brand-blue-mid/90 to-brand-green/80 z-10" />
-                  <div className="absolute right-0 top-0 w-80 h-80 bg-brand-green/20 rounded-full blur-3xl pointer-events-none" />
-                  <div className="absolute left-1/3 bottom-0 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none" />
-                  <div className="relative z-20 h-full flex flex-col justify-center text-left p-8 sm:p-12 max-w-2xl text-white">
-                    <span className="bg-brand-green text-white text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full w-fit mb-3">
-                      CAMPAÑA DEL MES
-                    </span>
-                    <h3 className="text-3xl sm:text-4xl font-black tracking-tight mb-3">
-                      ¡Delivery Gratis en tus Compras Online!
-                    </h3>
-                    <p className="text-sm sm:text-base text-white/80 mb-6 font-medium">
-                      Solicita tus medicamentos o productos de cuidado personal directo a casa en menos de 2 horas. Válido en toda Caracas por compras mayores a $20.
-                    </p>
-                    <a 
-                      href="https://wa.me/584125040440?text=Hola,%20quisiera%20hacer%20un%20pedido%20con%20delivery%20gratis."
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="bg-brand-green hover:bg-brand-green-hover text-white text-sm font-bold py-3.5 px-8 rounded-full transition-all w-fit shadow-md flex items-center gap-1.5"
-                    >
-                      Pedir Delivery
-                      <Truck className="w-4 h-4" />
-                    </a>
-                  </div>
-                </div>
-              ) : (
+              {(
                 /* Dynamic Banner Carousel - Redesigned to be Professional, Elegant & Corporate */
                 <div className="h-full w-full relative flex items-center">
                   <AnimatePresence mode="wait">
@@ -933,6 +907,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        )}
 
         {/* SECCIÓN 5: CAROUSEL SECUNDARIO DE OFERTAS (Cards Rediseñadas) */}
         <section id="ofertas-especiales" className="py-16 bg-white relative text-brand-dark">
