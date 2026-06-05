@@ -1,0 +1,131 @@
+================================================================================
+          RESUMEN GENERAL DEL PROYECTO: CASA DE REPRESENTACIÓN 2N (FARMATUYA)
+================================================================================
+
+Este documento contiene un resumen detallado del diseño, arquitectura, base de 
+datos y funcionalidades del sistema digital desarrollado para "Casa de 
+Representación 2N, C.A." (también denominado comercialmente como FarmaTuya).
+
+--------------------------------------------------------------------------------
+1. DESCRIPCIÓN GENERAL
+--------------------------------------------------------------------------------
+El proyecto es una aplicación web moderna orientada al sector farmacéutico y de 
+distribución de medicamentos. Ofrece un portal público donde los clientes pueden 
+explorar catálogos terapéuticos (moléculas), ver detalles de productos y 
+calcular conversiones monetarias en tiempo real, junto con un panel administrativo 
+privado para el control de inventario, registro de modificaciones, recepción de 
+mercancía (facturas vs. físico) y control de accesos de usuarios mediante roles.
+
+--------------------------------------------------------------------------------
+2. ARQUITECTURA Y TECNOLOGÍAS CLAVE
+--------------------------------------------------------------------------------
+* Frontend: Next.js 16.2 (App Router) y React 19.
+* Estilizado: Tailwind CSS v4 con variables CSS personalizadas y diseño adaptivo.
+* Base de Datos y Autenticación: Supabase (PostgreSQL) con políticas RLS (Row Level Security).
+* Animaciones y Micro-interacciones: Framer Motion.
+* Componentes de Deslizamiento: Embla Carousel.
+* Iconografía: Lucide React.
+* Multimoneda: Cliente de integración de tasas cambiarias (USD, EUR, Bs) con 
+  obtención dinámica y conversión en tiempo real en base a datos del BCV.
+
+--------------------------------------------------------------------------------
+3. ESTRUCTURA DE LA BASE DE DATOS (ESQUEMA POSTGRESQL)
+--------------------------------------------------------------------------------
+El sistema utiliza las siguientes tablas principales dentro de Supabase:
+
+1. `catalogos`:
+   - Representa las líneas terapéuticas o categorías de moléculas.
+   - Campos: id (UUID, PK), nombre (Text), descripcion (Text), imagen_url (Text), 
+     activo (Boolean), created_at (Timestamptz).
+
+2. `productos`:
+   - Almacena las medicinas y artículos de salud.
+   - Campos: id (UUID, PK), catalogo_id (UUID, FK a catalogos), nombre (Text), 
+     descripcion (Text), principio_activo (Text), presentacion (Text), linea (Text), 
+     precio (Numeric), moneda (Text, ej. 'USD'), stock (Integer), imagen_url (Text), 
+     activo (Boolean), created_at (Timestamptz).
+
+3. `profiles`:
+   - Extensión de la tabla auth.users para el control de accesos y roles.
+   - Campos: id (UUID, PK, FK a auth.users), email (Text), role (Text, ej. 'user', 
+     'admin', 'superadmin'), permissions (JSONB, guarda la lista de accesos y el 
+     creador del usuario), created_at (Timestamptz).
+
+4. `receptions`:
+   - Registro e historial del módulo de recepción de mercancía.
+   - Campos: id (UUID, PK), product_id (UUID, FK a productos), quantity_invoice (Integer), 
+     quantity_received (Integer), quantity_rejected (Integer), reason_rejected (Text), 
+     created_at (Timestamptz).
+
+5. `product_logs`:
+   - Registro de auditoría que guarda notas explicativas de las ediciones hechas 
+     a cada producto.
+   - Campos: id (UUID, PK), product_id (UUID, FK a productos), note (Text), 
+     created_at (Timestamptz).
+
+--------------------------------------------------------------------------------
+4. VISTAS Y FUNCIONALIDADES DEL PORTAL PÚBLICO
+--------------------------------------------------------------------------------
+* Página Principal (Landing Page - `src/app/page.tsx`):
+  - Navbar responsivo con un menú desplegable de "Moléculas" que lista los 
+    catálogos activos directamente desde la base de datos.
+  - Sección Hero con botones de llamado a la acción.
+  - Sección de Servicios: Atención Farmacéutica, Toma de Tensión, Inyectología y Delivery.
+  - Carrusel Interactivo de Catálogos mediante Embla Carousel.
+  - Grid de Productos Destacados con buscador y visualización de equivalencia en Bs y EUR.
+  
+* Detalle de Catálogos (`src/app/catalogs/[id]/page.tsx`):
+  - Filtra y expone los productos pertenecientes a la línea seleccionada.
+  
+* Detalle de Producto (`src/app/products/[id]/page.tsx`):
+  - Ficha técnica completa que muestra el principio activo, presentación, stock, 
+    y desglosa el precio en USD, EUR y Bs al cambio del día.
+
+--------------------------------------------------------------------------------
+5. PANEL DE ADMINISTRACIÓN (`src/app/admin`)
+--------------------------------------------------------------------------------
+* Dashboard (`/admin/page.tsx`):
+  - Muestra estadísticas generales: Total Productos, Bajo Stock (< 5 unidades), 
+    Categorías y Usuarios registrados.
+  - Tabla de alertas críticas de inventario para reabastecimiento rápido.
+
+* Gestión de Productos (`/admin/products/page.tsx`):
+  - Formulario de alta, edición y eliminación de medicamentos.
+  - Carga y alojamiento de imágenes directamente en Supabase Storage.
+  - Historial de cambios: Exige ingresar una nota explicativa al editar un producto, 
+    la cual se guarda en `product_logs`.
+  - Módulo de Recepción de Mercancía: Permite registrar entradas de inventario 
+    ingresando la cantidad según factura física y la cantidad recibida. Valida 
+    automáticamente los faltantes (rechazos), solicita un motivo de rechazo si 
+    los hay, actualiza el stock y guarda el registro en la tabla `receptions`.
+
+* Gestión de Catálogos (`/admin/catalogs/page.tsx`):
+  - Permite crear, modificar y eliminar las líneas terapéuticas con sus imágenes 
+    de portada correspondientes.
+
+* Gestión de Usuarios y Permisos (`/admin/users/page.tsx`):
+  - Permite a los administradores registrar sub-usuarios y configurar permisos 
+    específicos de lectura/escritura (Dashboard, Productos, Catálogos, Usuarios).
+  - Los usuarios solo ven y gestionan aquellos perfiles creados por ellos mismos.
+
+--------------------------------------------------------------------------------
+6. PÁGINA DE PROPUESTAS COMERCIALES (`src/app/propuestas/page.tsx`)
+--------------------------------------------------------------------------------
+Contiene una sección estilizada, responsiva y animada para presentar opciones de 
+venta del software a clientes interesados:
+
+* Definición de Modificación: Aclara al cliente qué se considera un cambio menor 
+  (textos, colores, reordenamiento) y qué se cotiza por separado (módulos nuevos, 
+  cambios en base de datos, APIs de terceros).
+* Propuesta 1 (Pago Único - Licencia Perpetua):
+  - Costo: $700 USD (50% al firmar, 50% al entregar).
+  - Incluye: Sistema configurado, capacitación, 10 modificaciones, 30 días de garantía.
+* Propuesta 2 (SaaS Mensual / Servicio Continuo):
+  - Costo: $150 USD/mes.
+  - Incluye: Soporte continuo, corrección de errores, 1 modificación al mes.
+  - Programa de Referidos: Descuento de $50 USD en factura por cada referido activo.
+* Propuesta 3 (Plan Completo - Máxima Tranquilidad):
+  - Costo: $1,200 USD (en 2 cuotas a 15 días).
+  - Incluye: Sistema, 6 meses de soporte, 20 modificaciones menores y dominio .com.
+  - Condición de suspensión a los 15 días si no se abona la segunda cuota.
+================================================================================

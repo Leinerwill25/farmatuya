@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #0A1128;
+  --primary: #0F3D93;
+  --primary-hover: #144CBA;
+  --accent: #6EA83B;
+  --accent-hover: #7CBD42;
+  --muted: #F2F9ED;
+  color-scheme: light !important;
+}
+
+html, body {
+  color-scheme: light !important;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-muted: var(--muted);
+  --font-sans: var(--font-inter);
+  
+  /* Brand FarmaTuya Colors and Compatibility Mappings */
+  --color-brand-blue: #0F3D93;
+  --color-brand-green: #6EA83B;
+  --color-brand-orange: #6EA83B; /* Maps old accent color to green */
+  --color-brand-blue-mid: #144CBA;
+  --color-brand-dark: #0A1128;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Custom Thin Scrollbar for dropdowns and navigation */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) rgba(0, 0, 0, 0.03);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Float Animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+.float-animation {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Shimmer Effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, var(--muted) 25%, rgba(255, 255, 255, 0.4) 50%, var(--muted) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Card Glow Effect */
+.card-glow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px -2px rgba(13, 27, 75, 0.05);
+}
+
+.card-glow:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -10px rgba(13, 27, 75, 0.12), 0 0 20px 2px rgba(26, 58, 143, 0.05);
+}
+
+/* Stripe Background */
+.stripe-bg {
+  background-color: var(--muted);
+  background-image: linear-gradient(45deg, rgba(26, 58, 143, 0.02) 25%, transparent 25%, transparent 50%, rgba(26, 58, 143, 0.02) 50%, rgba(26, 58, 143, 0.02) 75%, transparent 75%, transparent);
+  background-size: 40px 40px;
+}
+
+/* Gradient Card */
+.gradient-card {
+  background: linear-gradient(135deg, var(--background) 0%, rgba(241, 245, 249, 0.6) 100%);
+  border: 1px solid rgba(26, 58, 143, 0.08);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Infinite Marquee animations */
+@keyframes scrollLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scrollRight {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-scroll-left {
+  animation: scrollLeft 80s linear infinite;
+}
+
+.animate-scroll-right {
+  animation: scrollRight 80s linear infinite;
+}
+
+.pause-on-hover:hover {
+  animation-play-state: paused;
+}
+
+
