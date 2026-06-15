@@ -10,6 +10,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "FarmaTuya - Tu Salud y Bienestar",
   description: "Tu farmacia retail de confianza para la compra online de medicamentos y productos de cuidado personal en Venezuela.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+    shortcut: "/favicon.png",
+  },
 };
 
 export const viewport = {

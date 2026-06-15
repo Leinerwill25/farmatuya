@@ -36,7 +36,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="h-16 w-36 mx-auto mb-4 relative flex items-center justify-center">
             <Image 
-              src="/logo_farmatuya.png" 
+              src="/IMG_2070.PNG" 
               alt="FarmaTuya Logo" 
               fill
               sizes="144px"

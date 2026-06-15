@@ -54,16 +54,14 @@ export default function AdminLayout({
           <div className={`flex ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} items-center mb-8`}>
             {!isSidebarCollapsed && (
               <div className="mb-2">
-                <div className="bg-white p-2 rounded-xl inline-block shadow-sm">
-                  <div className="h-8 w-24 relative flex items-center justify-center">
-                    <Image
-                      src="/logo_farmatuya.png"
-                      alt="FarmaTuya Logo"
-                      fill
-                      sizes="96px"
-                      className="object-contain"
-                    />
-                  </div>
+                <div className="h-8 w-28 relative flex items-center justify-center">
+                  <Image
+                    src="/IMG_2070.PNG"
+                    alt="FarmaTuya Logo"
+                    fill
+                    sizes="112px"
+                    className="object-contain"
+                  />
                 </div>
                 <span className="text-xs text-brand-green block font-medium mt-1">Panel Admin</span>
               </div>
@@ -174,7 +172,7 @@ export default function AdminLayout({
             <div>
               <div className="h-10 w-24 relative flex items-center justify-center">
                 <Image
-                  src="/logo_farmatuya.png"
+                  src="/IMG_2070.PNG"
                   alt="FarmaTuya Logo"
                   fill
                   sizes="96px"

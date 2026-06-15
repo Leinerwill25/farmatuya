@@ -1,0 +1,619 @@
+
+================================================================================
+       PANEL ADMINISTRATIVO - FARMATUYA
+       MANUAL COMPLETO DE FUNCIONES Y MÓDULOS
+       Versión del sistema: Next.js + Supabase
+================================================================================
+
+ACCESO AL PANEL
+---------------
+  URL de acceso:  /login
+  URL del panel:  /admin
+
+  El sistema requiere autenticación mediante usuario y contraseña registrados
+  en Supabase Auth. Si el usuario no está autenticado, es redirigido
+  automáticamente a /login.
+
+  Una vez dentro, el panel muestra una barra lateral (sidebar) con acceso a
+  todos los módulos, y una barra superior con el email del usuario activo y
+  el botón de "Cerrar Sesión".
+
+================================================================================
+                        ESTRUCTURA DEL SIDEBAR
+================================================================================
+
+  El sidebar puede:
+    - Expandirse o colapsarse (en escritorio) con el ícono de menú (☰)
+    - Abrirse como panel deslizante en móviles con el botón de hamburguesa
+    - Cerrarse al hacer clic en el overlay oscuro (móvil)
+
+  Módulos disponibles en el menú lateral:
+  ┌─────────────────────────────────────────────────────────┐
+  │  📊  Dashboard          →  /admin                        │
+  │  🛍️  Productos          →  /admin/products               │
+  │  📦  Catálogos          →  /admin/catalogs               │
+  │  👥  Usuarios           →  /admin/users                  │
+  │  🎬  Videos Promo.      →  /admin/videos                 │
+  │  🖼️  Banners Promo.     →  /admin/banners                │
+  │  📍  Sedes / Tiendas    →  /admin/tiendas                │
+  └─────────────────────────────────────────────────────────┘
+
+================================================================================
+  MÓDULO 1: DASHBOARD  (/admin)
+================================================================================
+
+DESCRIPCIÓN:
+  Pantalla principal del panel administrativo. Muestra un resumen general
+  del estado del negocio mediante métricas en tiempo real cargadas desde
+  la base de datos.
+
+TARJETAS DE MÉTRICAS (4 indicadores visuales):
+  ┌─────────────────────────────────────────────────────────┐
+  │  1. Total Productos    Conteo total de productos         │
+  │                        registrados para FarmaTuya.       │
+  │                                                          │
+  │  2. Bajo Stock         Cantidad de productos con stock   │
+  │                        menor a 5 unidades (alerta roja). │
+  │                                                          │
+  │  3. Categorías         Total de catálogos/líneas         │
+  │                        registradas en el sistema.        │
+  │                                                          │
+  │  4. Usuarios           Total de usuarios sub-admins      │
+  │                        creados por el administrador.     │
+  └─────────────────────────────────────────────────────────┘
+
+ALERTAS DE INVENTARIO (tabla):
+  - Muestra hasta 5 productos con stock menor a 5 unidades.
+  - Columnas: Producto | Stock | Precio | Acción
+  - Botón "Reponer": redirige al módulo de Productos con el
+    nombre del producto pre-cargado en el buscador.
+  - Si no hay alertas, muestra el mensaje:
+    "No hay alertas de inventario en este momento (Stock < 5)."
+
+================================================================================
+  MÓDULO 2: PRODUCTOS  (/admin/products)
+================================================================================
+
+DESCRIPCIÓN:
+  Módulo central para la gestión completa del inventario de productos.
+  Permite crear, editar, eliminar y registrar recepciones de mercancía.
+
+────────────────────────────────────────────────────────────────────────────────
+2.1  FORMULARIO DE ALTA - "Agregar Nuevo Producto"
+────────────────────────────────────────────────────────────────────────────────
+
+CAMPOS DEL FORMULARIO:
+  • Nombre            (obligatorio) Nombre completo del producto.
+  • Moneda            Selector: Dólar (USD) | Euro (EUR) | Bolívar (BS).
+  • Precio            (obligatorio) Valor numérico del precio.
+  • Descripción       Texto corto descriptivo del producto.
+  • Bultos en Stock   Cantidad de bultos/cajas recibidos del proveedor.
+  • Unidades por Bulto Cantidad de unidades que contiene cada bulto.
+  • Stock Total       Calculado automáticamente:
+                      Stock Total = Bultos × Unidades por Bulto
+                      Campo de solo lectura (no editable directamente).
+  • Catálogo          Selector desplegable con los catálogos registrados.
+                      Opción "Sin Catálogo" disponible.
+  • Descuento (%)     Porcentaje de descuento del producto (0–100).
+  • Tendencia         Checkbox: "Destacar como Producto en Tendencia".
+                      Activa la visualización del producto en la sección
+                      de tendencias de la página principal.
+  • Imagen            Subida de archivo (JPG/PNG). Se almacena en el
+                      bucket "product-images" de Supabase Storage.
+  • Fecha Vencimiento Campo de tipo fecha para registrar caducidad.
+
+CONVERSIÓN EN TIEMPO REAL:
+  Al ingresar precio y moneda, el sistema muestra automáticamente los
+  equivalentes en las tres monedas (USD / EUR / Bs) usando las tasas
+  de cambio actualizadas desde la base de datos.
+
+ACCIÓN: Botón "Guardar Producto"
+  - Inserta el registro en la tabla "productos" de Supabase.
+  - Muestra un modal de éxito o error según el resultado.
+  - Limpia el formulario al completarse exitosamente.
+
+────────────────────────────────────────────────────────────────────────────────
+2.2  LISTADO DE PRODUCTOS
+────────────────────────────────────────────────────────────────────────────────
+
+BUSCADOR:
+  - Campo de búsqueda en tiempo real.
+  - Filtra por nombre o descripción del producto.
+  - Al cambiar el texto, resetea automáticamente a la página 1.
+
+TARJETAS DE PRODUCTO (grid 1/2/3 columnas según pantalla):
+  Cada tarjeta muestra:
+  • Imagen del producto (o ícono de carga si no tiene imagen).
+  • Badge flotante de stock:
+      - Verde si stock > 10 unidades.
+      - Rojo si stock ≤ 10 unidades.
+      - Texto: "Stock: X unidades".
+  • Nombre del producto (título en negrita).
+  • Descripción corta (máximo 2 líneas).
+  • Precio en su moneda principal.
+  • Equivalencias de precio en las otras dos monedas.
+  • Botón "Recepción": abre el modal de recepción de mercancía.
+  • Ícono de edición (lápiz): abre el modal de edición.
+  • Ícono de eliminación (basurero): solicita confirmación y elimina.
+
+PAGINACIÓN:
+  - Muestra 21 productos por página.
+  - Botones "Anterior" / "Siguiente" con indicador "Página X de Y".
+
+────────────────────────────────────────────────────────────────────────────────
+2.3  MODAL DE RECEPCIÓN DE MERCANCÍA
+────────────────────────────────────────────────────────────────────────────────
+
+PROPÓSITO:
+  Permite registrar el ingreso de mercancía al inventario diferenciando
+  lo facturado por el proveedor vs. lo efectivamente recibido.
+
+CAMPOS:
+  • Cantidad Facturada por Proveedor   Lo que indica la factura.
+  • Cantidad Real Ingresada            Lo que físicamente entró al almacén.
+
+LÓGICA AUTOMÁTICA:
+  - Si cantidad recibida < cantidad facturada:
+    → Se calcula automáticamente: Unidades rechazadas = Facturado - Recibido.
+    → Aparece una sección roja con el campo "Motivo del Rechazo / Novedad"
+      (obligatorio en ese caso). Ej: Dañado, Vencido, No entregado.
+  - Si cantidad recibida > cantidad facturada:
+    → Error: "La cantidad recibida no puede ser mayor a la facturada."
+
+RESULTADO DE LA RECEPCIÓN:
+  - El stock del producto se actualiza sumando las unidades recibidas.
+  - Los bultos se recalculan: Bultos = nuevo stock ÷ unidades por bulto.
+  - Se inserta un registro en la tabla "receptions" con todos los detalles.
+  - Mensaje de éxito: "Recepción completada. Se cargaron X unidades al inventario."
+
+────────────────────────────────────────────────────────────────────────────────
+2.4  MODAL DE EDICIÓN DE PRODUCTO
+────────────────────────────────────────────────────────────────────────────────
+
+PROPÓSITO:
+  Permite modificar cualquier campo de un producto existente.
+
+CAMPOS EDITABLES:
+  • Nombre
+  • Precio
+  • Moneda (USD/EUR/BS)
+  • Descripción
+  • Bultos en Stock
+  • Unidades por Bulto
+  • Stock Total (se recalcula automáticamente)
+  • Catálogo asignado
+  • Descuento (%)
+  • Tendencia (checkbox)
+  • Imagen (subida de nueva imagen con drag & drop)
+  • Nota de Auditoría (texto libre, obligatorio al editar)
+
+REGISTRO DE AUDITORÍA:
+  - Al guardar cambios, se inserta un registro en la tabla "product_logs"
+    con el ID del producto y la nota ingresada por el administrador.
+  - Esto permite rastrear qué cambios se hicieron y por qué.
+
+────────────────────────────────────────────────────────────────────────────────
+2.5  MODAL DE ELIMINACIÓN
+────────────────────────────────────────────────────────────────────────────────
+  - Al presionar el ícono de basurero, se solicita confirmación mediante
+    un modal personalizado (no el alert nativo del navegador).
+  - Si se confirma, el producto se elimina de la base de datos.
+  - Se muestra mensaje de éxito o error.
+
+================================================================================
+  MÓDULO 3: CATÁLOGOS  (/admin/catalogs)
+================================================================================
+
+DESCRIPCIÓN:
+  Gestión de las líneas terapéuticas / categorías de productos (catálogos).
+  Los catálogos organizan los productos y controlan qué categorías
+  aparecen destacadas en la página principal.
+
+────────────────────────────────────────────────────────────────────────────────
+3.1  FORMULARIO DE ALTA - "Crear Nuevo Catálogo"
+────────────────────────────────────────────────────────────────────────────────
+
+CAMPOS:
+  • Nombre del Catálogo   (obligatorio) Ej: "Línea Pediátrica"
+  • Descripción           Texto descriptivo del catálogo.
+  • Emoji / Ícono         Carácter emoji para identificar visualmente
+                          la categoría. Ej: 💊 🧴 👶
+  • Destacado (checkbox)  "Destacar como Categoría Destacada en el Home"
+                          Marca este catálogo para que aparezca en la
+                          sección "Categorías Destacadas" de la página
+                          principal como píldora/botón de filtro visual.
+  • Imagen del Catálogo   Archivo JPG/PNG representativo del catálogo.
+
+ACCIÓN: Botón "Crear Catálogo"
+  - Inserta el catálogo en la tabla "catalogos" de Supabase.
+  - Sube la imagen al bucket "product-images".
+  - Muestra modal de éxito o error.
+
+────────────────────────────────────────────────────────────────────────────────
+3.2  TABLA DE CATÁLOGOS
+────────────────────────────────────────────────────────────────────────────────
+
+BUSCADOR:
+  - Filtra en tiempo real por nombre o descripción.
+
+COLUMNAS DE LA TABLA:
+  • Imagen      Miniatura del catálogo (60×60px) o ícono de carga.
+  • Emoji       Ícono/emoji del catálogo.
+  • Nombre      Nombre del catálogo.
+  • Descripción Texto descriptivo.
+  • Destacado   Badge verde "Destacado" o gris "No" según estado.
+  • Acciones    Ícono de edición y ícono de eliminación.
+
+────────────────────────────────────────────────────────────────────────────────
+3.3  MODAL DE EDICIÓN DE CATÁLOGO
+────────────────────────────────────────────────────────────────────────────────
+
+CAMPOS EDITABLES:
+  • Nombre
+  • Descripción
+  • Emoji / Ícono
+  • Destacado (checkbox) - controla visibilidad en el home
+  • Imagen (nueva imagen con drag & drop)
+
+  IMPORTANTE: El campo "Destacado" es clave para la página principal.
+  Solo los catálogos marcados como "Destacado = true" aparecen en la
+  sección de "Categorías Destacadas" del home como botones de filtro.
+
+================================================================================
+  MÓDULO 4: USUARIOS Y PERMISOS  (/admin/users)
+================================================================================
+
+DESCRIPCIÓN:
+  Gestión de usuarios del panel administrativo con control de acceso
+  por roles y permisos granulares.
+
+────────────────────────────────────────────────────────────────────────────────
+4.1  CREAR NUEVO USUARIO
+────────────────────────────────────────────────────────────────────────────────
+
+CAMPOS:
+  • Correo Electrónico    Email del nuevo usuario (se usará para login).
+  • Contraseña            Contraseña inicial del usuario.
+  • Rol                   Selector: "Usuario" | "Administrador"
+
+PERMISOS DISPONIBLES (checkboxes):
+  ☐ Ver Dashboard
+  ☐ Gestionar Productos
+  ☐ Gestionar Catálogos
+  ☐ Gestionar Usuarios
+
+COMPORTAMIENTO:
+  - Se crea el usuario en Supabase Auth.
+  - Se crea el perfil en la tabla "profiles" con el rol y permisos.
+  - El campo "created_by" registra el ID del administrador que creó el usuario.
+  - Solo el administrador que creó a los usuarios puede verlos en su lista.
+
+────────────────────────────────────────────────────────────────────────────────
+4.2  CAMBIAR MI CONTRASEÑA
+────────────────────────────────────────────────────────────────────────────────
+
+  - Formulario simple con campo "Nueva Contraseña".
+  - Actualiza la contraseña del administrador actualmente logueado.
+  - Usa supabase.auth.updateUser() para aplicar el cambio.
+
+────────────────────────────────────────────────────────────────────────────────
+4.3  TABLA DE USUARIOS
+────────────────────────────────────────────────────────────────────────────────
+
+COLUMNAS:
+  • Email         Correo del usuario.
+  • Rol           Badge de color: azul (admin) o gris (usuario).
+  • Permisos      Lista de permisos activos del usuario.
+  • Acciones      Ícono de edición.
+
+────────────────────────────────────────────────────────────────────────────────
+4.4  MODAL DE EDICIÓN DE USUARIO
+────────────────────────────────────────────────────────────────────────────────
+
+CAMPOS EDITABLES:
+  • Rol (Usuario / Administrador)
+  • Permisos (checkboxes individuales para cada función)
+
+  - Guarda los cambios en la tabla "profiles".
+  - Muestra confirmación o error al finalizar.
+
+================================================================================
+  MÓDULO 5: VIDEOS PROMOCIONALES Y DESCUENTOS VISUALES  (/admin/videos)
+================================================================================
+
+DESCRIPCIÓN:
+  Módulo doble que administra dos tipos de contenido visual:
+    → Tab 1: Videos Promocionales
+    → Tab 2: Descuentos Visuales (tarjetas de oferta)
+
+  Ambas pestañas comparten el mismo módulo y se acceden mediante tabs.
+
+────────────────────────────────────────────────────────────────────────────────
+5.1  TAB: VIDEOS PROMOCIONALES
+────────────────────────────────────────────────────────────────────────────────
+
+FORMULARIO - "Nuevo Video Promocional":
+  • Título del Video    Nombre descriptivo. Ej: "Descuentos en Pediatría"
+  • Enlace del Video    URL del video. Soporta:
+                          - YouTube (Videos normales y YouTube Shorts)
+                          - Instagram Reels
+                          - Google Drive (archivos compartidos)
+  • Orden               Número de orden de visualización.
+  • Activo (checkbox)   Si está activo, se muestra en la web.
+
+DETECCIÓN AUTOMÁTICA DE PLATAFORMA:
+  El sistema detecta automáticamente el tipo de video según la URL:
+    - URLs con "youtube.com" o "youtu.be"  → YouTube
+    - URLs con "instagram.com"             → Instagram
+    - Cualquier otra URL                   → Google Drive
+
+CONVERSIÓN A EMBED:
+  - YouTube Shorts/Videos: extrae el ID y genera URL de embed oficial.
+  - Instagram: genera la URL de embed del reel.
+  - Drive: extrae el fileId y genera la URL de preview de Drive.
+
+LISTADO DE VIDEOS (grid 2 columnas):
+  Cada tarjeta muestra:
+  • Encabezado con: ícono de plataforma + título + número de orden.
+  • Preview embebido del video (iframe responsive 16:9).
+  • Botón de estado: "Visible" (verde) / "Oculto" (gris).
+    → Al hacer clic alterna el estado activo/inactivo en la BD.
+  • Ícono de enlace externo (abre el video en la plataforma original).
+  • Ícono de eliminación (con confirmación).
+
+────────────────────────────────────────────────────────────────────────────────
+5.2  TAB: DESCUENTOS VISUALES (Tarjetas de Oferta)
+────────────────────────────────────────────────────────────────────────────────
+
+DESCRIPCIÓN:
+  Tarjetas visuales de descuento que aparecen en la sección
+  "Promociones Imperdibles" del carrusel de la página principal.
+
+FORMULARIO - "Nuevo Descuento Visual":
+  • Título de la Tarjeta   Texto de la oferta. Ej: "Hasta 30% en Cuidado Bucal"
+  • Descuento (%)          Porcentaje numérico (1–100).
+  • Orden                  Posición de visualización en el carrusel.
+  • Línea/Catálogo         Selector desplegable para asociar la oferta a
+                           un catálogo existente (crea enlace al hacerle clic).
+                           Opción "Ninguno (Sin Enlace)" disponible.
+  • Activo (checkbox)      Controla visibilidad en la web.
+  • Imagen del Descuento   Foto o imagen del producto/categoría en oferta.
+                           Se sube al bucket "product-images" de Supabase.
+
+ACCIONES EN EL LISTADO:
+  • Ícono de edición    Carga los datos en el formulario para modificar.
+  • Toggle de estado    Alterna entre Activo/Inactivo.
+  • Eliminación         Con confirmación previa.
+
+MODO SIMULACIÓN:
+  - Si la tabla de la BD no existe, el sistema activa un "Modo Local"
+    mostrando datos de ejemplo y una alerta naranja con instrucciones SQL.
+  - En este modo los cambios son temporales (solo en memoria).
+
+================================================================================
+  MÓDULO 6: BANNERS PROMOCIONALES  (/admin/banners)
+================================================================================
+
+DESCRIPCIÓN:
+  Módulo avanzado para crear y gestionar los banners de gran formato
+  que aparecen en la sección central de la página principal. Cada banner
+  está diseñado para destacar un producto específico con enlace directo
+  a WhatsApp.
+
+────────────────────────────────────────────────────────────────────────────────
+6.1  FORMULARIO DE BANNER (panel izquierdo)
+────────────────────────────────────────────────────────────────────────────────
+
+PALETAS DE COLORES RÁPIDAS (Quick Presets):
+  Botones de acceso rápido a combinaciones de colores prediseñadas:
+    - Cortynase (Púrpura oscuro / botón verde)
+    - Sinmegas (Menta claro / botón rosa)
+    - FarmaTuya Clásico (Azul institucional / botón verde oliva)
+    - NOW Suplementos (Naranja / botón azul)
+  Al hacer clic en una paleta, aplica automáticamente los 4 colores del banner.
+
+CAMPOS DEL FORMULARIO:
+  • Título (Tag de Cabecera)
+      Texto pequeño superior del banner. Ej: "Ponle fin a la congestión"
+  • Nombre del Producto
+      Nombre del producto destacado. Ej: "Cortynase"
+      También se usa como marca de agua decorativa en el lado derecho.
+  • Texto Destacado (Principal)
+      Título grande del banner. Ej: "Recupera el aire y la claridad..."
+  • Subtítulo (Especificación Médica)
+      Texto técnico. Ej: "Furoato de Mometasona 50mcg/dosis"
+  • Ruta Imagen Caja Producto (PNG)
+      URL o ruta local de la imagen del producto. Ej: /products/cortynase.png
+  • Ruta Imagen Decorativa (PNG)
+      Imagen decorativa opcional en el lado derecho del banner.
+  • Color de Fondo
+      Selector de color (color picker nativo). Afecta el fondo del banner.
+  • Color de Texto
+      Color del texto principal del banner.
+  • Color del Botón
+      Color de fondo del botón de llamada a la acción.
+  • Color Texto del Botón
+      Color del texto dentro del botón.
+  • Texto del Botón
+      Etiqueta del botón. Ej: "Ver Precios", "Consultar Producto"
+  • Mensaje de WhatsApp
+      Texto preescrito para enviar al número de WhatsApp de FarmaTuya
+      cuando el cliente hace clic en el botón del banner.
+      Ej: "Hola, me interesa comprar Cortynase. Quisiera saber los precios."
+  • Activo / Mostrar en Web
+      Checkbox para controlar si el banner se muestra públicamente.
+  • Orden
+      Número de posición en el carrusel de banners.
+
+────────────────────────────────────────────────────────────────────────────────
+6.2  PREVISUALIZACIÓN RESPONSIVA EN TIEMPO REAL (panel derecho)
+────────────────────────────────────────────────────────────────────────────────
+
+  SIMULADOR DE VIEWPORT:
+  Permite ver cómo lucirá el banner en cada dispositivo:
+    [🖥️ Desktop]  [💻 Laptop]  [📱 Tablet]  [📱 Móvil]
+
+  La previsualización actualiza en tiempo real a medida que el administrador
+  escribe en los campos del formulario. Simula la apariencia exacta del
+  banner en la página principal, incluyendo:
+    - Imagen del producto en tarjeta flotante blanca.
+    - Texto del título con chip decorativo.
+    - Texto destacado con tipografía y colores seleccionados.
+    - Subtítulo con ícono de ADN (🧬).
+    - Botón de WhatsApp con los colores elegidos.
+    - Marca de agua con el nombre del producto.
+    - Barra de navegador simulada (puntos rojo/amarillo/verde + URL).
+
+────────────────────────────────────────────────────────────────────────────────
+6.3  TABLA DE BANNERS REGISTRADOS
+────────────────────────────────────────────────────────────────────────────────
+
+COLUMNAS:
+  • Orden      Número de posición + botones de reordenamiento (↑ ↓).
+  • Producto   Miniatura de imagen + nombre del producto.
+  • Título     Texto del tag de cabecera y texto destacado.
+  • Fondo      Muestra el color hexadecimal con muestra de color visual.
+  • Botón      Badge del botón con sus colores aplicados.
+  • Estado     Toggle "Activo" / "Inactivo" (clic para alternar).
+  • Acciones   Ícono de edición y ícono de eliminación.
+
+REORDENAMIENTO:
+  - Botones ↑ y ↓ en cada fila para cambiar el orden de aparición.
+  - Al mover, intercambia el order_index entre el banner actual y el adyacente.
+  - Los cambios se guardan inmediatamente en la base de datos.
+
+TOGGLE DE ESTADO:
+  - Clic directo en el badge "Activo" lo pasa a "Inactivo" y viceversa.
+  - Solo los banners "Activos" aparecen en la página principal.
+
+================================================================================
+  MÓDULO 7: SEDES / TIENDAS  (/admin/tiendas)
+================================================================================
+
+DESCRIPCIÓN:
+  Gestión de las sedes físicas de FarmaTuya que aparecen en la sección
+  "Nuestras Tiendas" de la página principal. Permite registrar, editar
+  y activar/desactivar ubicaciones.
+
+────────────────────────────────────────────────────────────────────────────────
+7.1  FORMULARIO DE SEDE (panel de creación/edición)
+────────────────────────────────────────────────────────────────────────────────
+
+CAMPOS:
+  • Nombre de la Sede
+      Nombre identificador. Ej: "FarmaTuya Petare" / "FarmaTuya Centro"
+  • Dirección
+      Dirección física completa.
+      Ej: "Centro Comercial Los Ruices, Piso 1, Local 12"
+  • Horario de Atención
+      Texto libre del horario. Valor por defecto:
+      "8:00 AM - 10:00 PM (Lunes a Domingo)"
+  • Link de Ubicación (Google Maps)
+      URL directa a Google Maps para que el cliente pueda llegar.
+      Ej: "https://maps.google.com/?q=..."
+  • Activa (checkbox)
+      Controla si la sede aparece en la página principal.
+
+MODO FORMULARIO:
+  - Si se hace clic en "Agregar Nueva Sede": el formulario aparece en modo
+    creación con campos vacíos.
+  - Si se hace clic en editar una sede existente: el formulario se completa
+    con los datos actuales de esa sede en modo edición.
+
+ACCIÓN: Botón "Guardar Sede" / "Actualizar Sede"
+  - Crea o actualiza el registro en la tabla "tiendas" de Supabase.
+  - Muestra modal de confirmación o error.
+
+────────────────────────────────────────────────────────────────────────────────
+7.2  LISTADO DE SEDES
+────────────────────────────────────────────────────────────────────────────────
+
+TARJETAS DE SEDE (una por registro):
+  Cada tarjeta muestra:
+  • Encabezado: nombre de la sede + badge de estado (Activa/Inactiva).
+  • Dirección completa con ícono de pin de mapa.
+  • Horario de atención con ícono de reloj.
+  • Enlace a Google Maps (si fue registrado):
+      → Botón "Ver en Mapa" que abre la ubicación en una nueva pestaña.
+  • Botones de acción:
+      - ✏️ Editar: carga los datos en el formulario superior.
+      - 🔴/🟢 Toggle activo: activa o desactiva la sede.
+      - 🗑️ Eliminar: con confirmación previa.
+
+FUNCIONES ADICIONALES:
+  - Al eliminar: confirmación con modal personalizado (éxito/error).
+  - Al activar/desactivar: el badge cambia inmediatamente entre
+    "Activa" (verde) y "Inactiva" (rojo).
+
+================================================================================
+  RESUMEN DE TABLAS EN SUPABASE
+================================================================================
+
+  Tabla                  Módulo que la gestiona
+  ─────────────────────────────────────────────────────────────────
+  productos              Módulo 2: Productos
+  catalogos              Módulo 3: Catálogos
+  profiles               Módulo 4: Usuarios y Permisos
+  videos_promocionales   Módulo 5: Videos Promocionales (Tab 1)
+  descuentos_visuales    Módulo 5: Descuentos Visuales (Tab 2)
+  banners_promocionales  Módulo 6: Banners Promocionales
+  tiendas                Módulo 7: Sedes / Tiendas
+  receptions             Módulo 2: Registro de recepciones de stock
+  product_logs           Módulo 2: Bitácora/auditoría de cambios
+
+================================================================================
+  REGLAS DE NEGOCIO IMPORTANTES
+================================================================================
+
+  1. PRECIOS:
+     - Los precios se guardan en la BD con su moneda original (USD/EUR/BS).
+     - En el panel admin se muestran precios y equivalencias.
+     - En la PÁGINA PÚBLICA no se muestran precios (política de privacidad).
+     - En la PÁGINA PÚBLICA el stock muestra "En Stock" / "Agotado".
+
+  2. EMPRESA:
+     - Todos los registros se guardan con empresa = 'farmatuya'.
+     - Esto permite que el sistema sea multiempresa en el futuro.
+
+  3. ESTADO ACTIVO:
+     - Los productos, catálogos, tiendas, banners y videos tienen un campo
+       "activo" o "destacado" que controla su visibilidad pública.
+     - Desactivar un registro lo oculta de la web sin eliminarlo.
+
+  4. DESTACADO EN CATÁLOGOS:
+     - Solo los catálogos con "destacado = true" aparecen como botones
+       de filtro en la sección "Categorías Destacadas" del home.
+
+  5. BANNERS:
+     - Si no hay banners activos en la BD, la sección del banner
+       simplemente no se muestra en la página principal.
+
+  6. TENDENCIA EN PRODUCTOS:
+     - Los productos con "en_tendencia = true" aparecen en la sección
+       "Productos en Tendencia" del home.
+
+  7. DESCUENTOS:
+     - Los productos con "descuento > 0" pueden destacarse en la sección
+       de ofertas del carrusel secundario.
+
+  8. AUDITORÍA:
+     - Cada edición de producto genera un registro en "product_logs".
+     - Cada recepción de mercancía genera un registro en "receptions".
+
+================================================================================
+  AUTENTICACIÓN Y SEGURIDAD
+================================================================================
+
+  - El panel usa Supabase Auth para autenticación.
+  - La sesión se verifica en el layout del panel (/admin/layout.tsx).
+  - Si no hay sesión activa → redirección automática a /login.
+  - El botón "Cerrar Sesión" cierra la sesión y redirige a /login.
+  - Las credenciales se configuran en el archivo .env.local:
+      NEXT_PUBLIC_SUPABASE_URL=...
+      NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+
+================================================================================
+  FIN DEL DOCUMENTO
+  FarmaTuya - Panel Administrativo
+  Versión documentada: Junio 2026
+================================================================================

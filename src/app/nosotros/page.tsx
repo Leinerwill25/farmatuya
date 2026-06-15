@@ -55,9 +55,9 @@ export default function NosotrosPage() {
         {/* HERO SECTION */}
         <section className="relative py-24 bg-brand-dark overflow-hidden text-white">
           {/* Decorative gradients */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0F3D93] via-[#0A1128] to-[#6EA83B]/40 z-10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0F3D93] via-[#0F3D93] via-[#0A1128] to-[#6EA83B]/25 z-10" />
           <div className="absolute right-[-10%] top-[-10%] w-[50%] h-[120%] bg-white/5 blur-3xl rounded-full transform rotate-12 pointer-events-none" />
-          <div className="absolute left-[-5%] bottom-[-20%] w-[40%] h-[80%] bg-brand-green/15 blur-3xl rounded-full pointer-events-none" />
+          <div className="absolute left-[-5%] bottom-[-20%] w-[40%] h-[80%] bg-brand-blue/20 blur-3xl rounded-full pointer-events-none" />
           
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20 text-center space-y-6">
             <span className="inline-flex items-center gap-2 bg-brand-green/20 border border-brand-green/30 text-brand-green text-xs font-black tracking-widest uppercase px-4 py-2 rounded-full">
@@ -306,7 +306,7 @@ export default function NosotrosPage() {
                   className="bg-white p-8 rounded-3xl border border-slate-100 hover:border-brand-green/20 shadow-sm hover:shadow-md flex flex-col items-start text-left group transition-all duration-500 hover:-translate-y-1 border-l-4 border-l-transparent hover:border-l-brand-green"
                   variants={itemVariants}
                 >
-                  <div className="w-12 h-12 rounded-2xl bg-brand-green/10 text-brand-green flex items-center justify-center mb-6 group-hover:bg-gradient-to-br group-hover:from-brand-blue group-hover:to-brand-green group-hover:text-white group-hover:scale-105 transition-all duration-500 shadow-sm">
+                  <div className="w-12 h-12 rounded-2xl bg-brand-green/10 text-brand-green flex items-center justify-center mb-6 group-hover:bg-gradient-to-br group-hover:from-brand-blue group-hover:via-brand-blue-mid group-hover:to-brand-green group-hover:text-white group-hover:scale-105 transition-all duration-500 shadow-sm">
                     <item.icon className="w-6 h-6" />
                   </div>
                   <h4 className="font-black text-lg text-brand-dark mb-3 group-hover:text-brand-blue transition-colors">{item.title}</h4>
@@ -340,7 +340,7 @@ export default function NosotrosPage() {
               {/* Left Column: Visual representation */}
               <motion.div className="lg:col-span-5 flex justify-center" variants={itemVariants}>
                 <div className="w-full h-80 rounded-3xl bg-brand-dark relative overflow-hidden flex items-center justify-center shadow-lg group">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue via-brand-dark/95 to-brand-green/20 z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue via-brand-blue-mid via-brand-dark/95 to-brand-green/10 z-10" />
                   <div className="absolute inset-0 bg-gray-150 pointer-events-none">
                     <img 
                       src="/catalog_personal.png" 
@@ -435,15 +435,13 @@ export default function NosotrosPage() {
             {/* Columna 1: Branding */}
             <div className="lg:col-span-4 space-y-4 text-left">
               <div className="flex items-center gap-2">
-                <div className="bg-white/95 p-2 rounded-2xl inline-block shadow-sm">
-                  <div className="relative w-32 h-10">
-                    <Image 
-                      src="/logo_farmatuya.png" 
-                      alt="FarmaTuya Logo" 
-                      fill 
-                      className="object-contain"
-                    />
-                  </div>
+                <div className="relative w-36 h-10">
+                  <Image 
+                    src="/IMG_2070.PNG" 
+                    alt="FarmaTuya Logo" 
+                    fill 
+                    className="object-contain"
+                  />
                 </div>
               </div>
               <p className="text-white/60 text-xs font-semibold leading-relaxed max-w-sm">
