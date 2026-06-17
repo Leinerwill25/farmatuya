@@ -592,66 +592,6 @@ export default function HomePageClient({ initialData }: { initialData: any }) {
           </div>
         </section>
 
-        {/* PORTAL DE BÚSQUEDA INTERACTIVO (Retail Landing Focus) */}
-        <section className="relative z-30 max-w-4xl mx-auto -mt-10 px-4 sm:px-6">
-          <div className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100 flex flex-col md:flex-row items-center gap-4" ref={searchContainerRef}>
-            <div className="flex-grow w-full relative">
-              <div className="relative flex items-center">
-                <Search className="absolute left-4.5 h-5 w-5 text-gray-400 pointer-events-none" />
-                <input
-                  type="text"
-                  placeholder="Busca por nombre de medicina o principio activo (ej. Ibuprofeno)..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setShowSearchDropdown(true)}
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent focus:border-brand-green/30 focus:bg-white rounded-2xl text-base outline-none transition-all text-brand-dark placeholder-gray-400 font-medium"
-                />
-                {isSearching && (
-                  <div className="absolute right-4 w-5 h-5 border-2 border-brand-green border-t-transparent rounded-full animate-spin" />
-                )}
-              </div>
-
-              {/* Dynamic Dropdown Results */}
-              {showSearchDropdown && searchQuery.trim().length >= 2 && (
-                <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden max-h-[350px] overflow-y-auto">
-                  {isSearching ? (
-                    <div className="p-6 text-center text-sm text-gray-500 font-medium">Buscando en catálogo...</div>
-                  ) : searchResults.length === 0 ? (
-                    <div className="p-6 text-center text-sm text-gray-500 font-medium">No se encontraron productos coincidentes.</div>
-                  ) : (
-                    <div className="py-2 divide-y divide-gray-50">
-                      {searchResults.map((product) => {
-                        return (
-                          <Link
-                            key={product.id}
-                            href={`/products/${product.id}`}
-                            className="flex items-center gap-4 px-4 py-3 hover:bg-brand-green/5 transition-colors text-left group"
-                          >
-                            <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0 relative overflow-hidden">
-                              <SafeImage src={product.imagen_url} alt={product.nombre} className="object-contain max-w-full max-h-full" fallbackIcon={ShoppingBag} />
-                            </div>
-                            <div className="flex-grow min-w-0">
-                              <h4 className="font-bold text-sm text-brand-dark truncate">{product.nombre}</h4>
-                              <p className="text-[11px] text-gray-400 truncate">{product.principio_activo} {product.presentacion && `• ${product.presentacion}`}</p>
-                            </div>
-                            <div className="text-right flex-shrink-0 text-brand-blue font-black text-xs group-hover:text-brand-green transition-colors flex items-center gap-0.5">
-                              <span>Ver</span>
-                              <ArrowRight className="h-3.5 w-3.5" />
-                            </div>
-                          </Link>
-                        )
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            <button className="w-full md:w-auto px-8 py-4 bg-brand-blue hover:bg-brand-blue-mid text-white font-bold rounded-2xl transition-all shadow-md">
-              Buscar
-            </button>
-          </div>
-        </section>
 
         {/* SECCIÓN 3: CHIPS DE CATEGORÍAS */}
         <section id="categorias" className="py-16 bg-white text-brand-dark">
@@ -1305,7 +1245,7 @@ export default function HomePageClient({ initialData }: { initialData: any }) {
         </section>
 
         {/* SECCIÓN 10: SOBRE NOSOTROS (Historia, Misión, Visión y Valores - Rediseñada) */}
-        <section id="nosotros" className="py-20 bg-brand-muted text-brand-dark">
+        <section id="nosotros" className="py-20 bg-gradient-to-r from-brand-blue via-brand-blue-mid to-brand-green text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
             
             {/* 1. Historia (6 Años en Petare) */}
@@ -1383,7 +1323,7 @@ export default function HomePageClient({ initialData }: { initialData: any }) {
             <div className="space-y-8">
               <div className="text-center">
                 <span className="text-brand-green font-bold tracking-wider uppercase text-xs block mb-2">Nuestro ADN</span>
-                <h3 className="text-2xl font-black text-brand-dark tracking-tight">Nuestros Valores</h3>
+                <h3 className="text-2xl font-black text-white tracking-tight">Nuestros Valores</h3>
                 <div className="w-12 h-0.5 bg-brand-green mx-auto mt-3 rounded-full" />
               </div>
 

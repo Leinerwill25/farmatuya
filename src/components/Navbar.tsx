@@ -133,7 +133,7 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md text-brand-dark shadow-sm border-b border-gray-100/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center h-18 gap-3 py-3">
+        <div className="flex items-center h-18 gap-5 py-3 lg:gap-8">
 
           {/* ── Logo ── */}
           <Link href="/" className="flex-shrink-0 flex items-center justify-center h-11 w-32 relative">
@@ -147,18 +147,8 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* ── Tiendas pill (desktop) ── */}
-          <Link
-            href="/tiendas"
-            className="hidden sm:flex items-center gap-1 text-brand-dark/60 hover:text-brand-green transition-colors text-xs font-semibold flex-shrink-0"
-            title="Ver Tiendas"
-          >
-            <MapPin className="h-4 w-4 text-brand-green" />
-            <span>Tiendas</span>
-          </Link>
-
           {/* ── Search Bar (desktop) ── */}
-          <div ref={searchContainerRef} className="hidden md:flex flex-1 mx-4 relative">
+          <div ref={searchContainerRef} className="hidden md:flex flex-1 mx-6 lg:mx-10 relative">
             <form onSubmit={handleSearchSubmit} className="w-full">
               <div className="relative flex items-center">
                 {/* Search Icon */}
@@ -279,8 +269,21 @@ export default function Navbar() {
             )}
           </div>
 
+
+          {/* ── Tiendas pill (desktop) ── */}
+          <Link
+            href="/tiendas"
+            className="hidden sm:flex items-center gap-1 text-brand-dark/60 hover:text-brand-green transition-colors text-xs font-semibold flex-shrink-0"
+            title="Ver Tiendas"
+          >
+            <MapPin className="h-4 w-4 text-brand-green" />
+            <span>Tiendas</span>
+          </Link>
+
+
+
           {/* ── Desktop Nav Links ── */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium flex-shrink-0">
+          <nav className="hidden md:flex items-center gap-7 lg:gap-10 text-sm font-medium flex-shrink-0">
             <Link href="/" className={`hover:text-brand-green transition-colors ${pathname === '/' ? 'text-brand-green font-semibold' : 'text-brand-dark/70'}`}>
               Inicio
             </Link>
@@ -322,9 +325,8 @@ export default function Navbar() {
             </div>
 
             {/* Venezuela Flag */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-full" title="Venezuela">
-              <img src="/Flag_of_Venezuela.svg.png" alt="Venezuela" className="h-3.5 w-5 object-cover rounded-sm shadow-sm" />
-              <span className="text-[11px] font-bold text-slate-500">VE</span>
+            <div className="flex items-center ml-1" title="Venezuela">
+              <img src="/Flag_of_Venezuela.svg.png" alt="Venezuela" className="h-4 w-6 object-cover rounded-sm shadow-sm" />
             </div>
           </nav>
 
