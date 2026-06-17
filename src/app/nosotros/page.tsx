@@ -437,7 +437,7 @@ export default function NosotrosPage() {
               <div className="flex items-center gap-2">
                 <div className="relative w-36 h-10">
                   <Image 
-                    src="/IMG_2070.PNG" 
+                    src="/títulos-bordes-blancos.png" 
                     alt="FarmaTuya Logo" 
                     fill 
                     className="object-contain"
@@ -459,16 +459,7 @@ export default function NosotrosPage() {
               </div>
             </div>
 
-            {/* Columna 2: Tu Cuenta */}
-            <div className="lg:col-span-2 text-left">
-              <h4 className="font-extrabold text-sm uppercase tracking-wider text-brand-green mb-4">Tu Cuenta</h4>
-              <ul className="space-y-2.5 text-xs text-white/60 font-semibold">
-                <li><Link href="/login" className="hover:text-white transition-colors">Iniciar Sesión</Link></li>
-                <li><Link href="/login" className="hover:text-white transition-colors">Crear Cuenta</Link></li>
-                <li><Link href="/#inicio" className="hover:text-white transition-colors">Mis Pedidos</Link></li>
-                <li><Link href="/#inicio" className="hover:text-white transition-colors">Mis Recetas</Link></li>
-              </ul>
-            </div>
+
 
             {/* Columna 3: Descubre */}
             <div className="lg:col-span-2 text-left">
